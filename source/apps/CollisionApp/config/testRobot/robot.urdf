@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<robot name="dummy">
+  <link name="base"/>
+  <link name="link1"/>
+  <link name="link2"/>
+  <joint name="joint1" type="revolute">
+    <parent link="base"/>
+    <child link="link1"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.1"/>
+    <axis xyz="1 0 0"/>
+  </joint>
+   <joint name="joint2" type="revolute">
+     <parent link="link1"/>
+     <child link="link2"/>
+     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.1"/>
+     <axis xyz="1 0 0"/>
+   </joint>
+</robot>
+
