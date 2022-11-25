@@ -49,7 +49,7 @@ public:
     void updatePlots(const bool& isRecedingHorizon);
 
     //--- Drawing
-    void drawGui();
+    void drawGui(const bool& withTrajectoryStettings = true);
     void drawScene(const double& currentAnimationTime, const bool& isRecedingHorizon) const;
 
 private:

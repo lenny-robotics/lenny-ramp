@@ -276,27 +276,24 @@ void Plan::drawStateTargets() const {
     }
 }
 
-void Plan::drawGui() {
+void Plan::drawGui(const bool& withTrajectoryStettings) {
     using tools::Gui;
     if (Gui::I->TreeNode(("Plan - `" + agent->name + "`").c_str())) {
         if (Gui::I->TreeNode("Settings")) {
-            int numSteps = this->numSteps;
-            if (Gui::I->Slider("Num Steps", numSteps, 1, 100))
-                setNumSteps(numSteps);
+            if (withTrajectoryStettings) {
+                int numSteps = this->numSteps;
+                if (Gui::I->Slider("Num Steps", numSteps, 1, 100))
+                    setNumSteps(numSteps);
 
-            double deltaT = this->deltaT;
-            if (Gui::I->Slider("Delta T", deltaT, 1e-5, 0.1))
-                setDeltaT(deltaT);
+                double deltaT = this->deltaT;
+                if (Gui::I->Slider("Delta T", deltaT, 1e-5, 0.1))
+                    setDeltaT(deltaT);
+            }
 
             Eigen::VectorXb dofMask = agent->getDofMask();
             if (Gui::I->TreeNode("Dof Mask")) {
-                static constexpr auto baseNames = magic_enum::enum_names<robot::Base::DOFS>();
-                for (uint i = 0; i < 6; i++)
-                    if (Gui::I->Checkbox(std::string(baseNames[i]).c_str(), dofMask[i]))
-                        setDofMask(dofMask);
-
-                for (const auto& [jointName, joint] : agent->robot.joints)
-                    if (Gui::I->Checkbox(jointName.c_str(), dofMask[agent->robot.getStateIndex(jointName)]))
+                for (int i = 0; i < dofMask.size(); i++)
+                    if (Gui::I->Checkbox(agent->robot.getDescriptionForDofIndex(i).c_str(), dofMask[i]))
                         setDofMask(dofMask);
 
                 Gui::I->TreePop();
@@ -305,7 +302,7 @@ void Plan::drawGui() {
             Gui::I->TreePop();
         }
 
-        if (Gui::I->TreeNode("Targets")) {
+        if (Gui::I->TreeNode("Agenda")) {
             Gui::I->PushItemWidth(75.f);
 
             if (Gui::I->TreeNode("Link Targets")) {
