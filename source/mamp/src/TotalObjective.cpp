@@ -21,11 +21,11 @@ void TotalObjective::initialize(const rapt::WorldCollisionHandler::PrimitiveList
 double TotalObjective::computeValue(const Eigen::VectorXd& q) const {
     double value = optimization::TotalObjective::computeValue(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        value += tso.computeValue(trajectory);
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        value += tso.computeValue(q.segment(startIndex, size));
     }
 
     return value;
@@ -34,25 +34,26 @@ double TotalObjective::computeValue(const Eigen::VectorXd& q) const {
 void TotalObjective::computeGradient(Eigen::VectorXd& pVpQ, const Eigen::VectorXd& q) const {
     optimization::TotalObjective::computeGradient(pVpQ, q);
 
-    Eigen::VectorXd trajectory, gradient;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
+    Eigen::VectorXd gradient;
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        tso.computeGradient(gradient, trajectory);
-        pVpQ.segment(startIndex, trajectory.size()) += gradient;
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        tso.computeGradient(gradient, q.segment(startIndex, size));
+        pVpQ.segment(startIndex, size) += gradient;
     }
 }
 
 void TotalObjective::computeHessian(Eigen::SparseMatrixD& p2VpQ2, const Eigen::VectorXd& q) const {
     optimization::TotalObjective::computeHessian(p2VpQ2, q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     Eigen::TripletDList tripletDList;
     Eigen::SparseMatrixD hessian;
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        tso.computeHessian(hessian, trajectory);
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        tso.computeHessian(hessian, q.segment(startIndex, size));
         for (int k = 0; k < hessian.outerSize(); ++k)
             for (Eigen::SparseMatrixD::InnerIterator it(hessian, k); it; ++it)
                 tools::utils::addTripletDToList(tripletDList, startIndex + it.row(), startIndex + it.col(), it.value());
@@ -65,11 +66,11 @@ void TotalObjective::computeHessian(Eigen::SparseMatrixD& p2VpQ2, const Eigen::V
 bool TotalObjective::testIndividualFirstDerivatives(const Eigen::VectorXd& q) const {
     bool testSuccessful = optimization::TotalObjective::testIndividualFirstDerivatives(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        if (!tso.testIndividualFirstDerivatives(trajectory))
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        if (!tso.testIndividualFirstDerivatives(q.segment(startIndex, size)))
             testSuccessful = false;
     }
 
@@ -79,11 +80,11 @@ bool TotalObjective::testIndividualFirstDerivatives(const Eigen::VectorXd& q) co
 bool TotalObjective::testIndividualSecondDerivatives(const Eigen::VectorXd& q) const {
     bool testSuccessful = optimization::TotalObjective::testIndividualSecondDerivatives(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        if (!tso.testIndividualSecondDerivatives(trajectory))
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        if (!tso.testIndividualSecondDerivatives(q.segment(startIndex, size)))
             testSuccessful = false;
     }
 
@@ -99,44 +100,44 @@ void TotalObjective::setFDCheckIsBeingApplied(bool isBeingApplied) const {
 void TotalObjective::preFDEvaluation(const Eigen::VectorXd& q) const {
     optimization::TotalObjective::preFDEvaluation(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        tso.preFDEvaluation(trajectory);
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        tso.preFDEvaluation(q.segment(startIndex, size));
     }
 }
 
 void TotalObjective::preValueEvaluation(const Eigen::VectorXd& q) const {
     optimization::TotalObjective::preValueEvaluation(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        tso.preValueEvaluation(trajectory);
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        tso.preValueEvaluation(q.segment(startIndex, size));
     }
 }
 
 void TotalObjective::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
     optimization::TotalObjective::preDerivativeEvaluation(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        tso.preDerivativeEvaluation(trajectory);
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        tso.preDerivativeEvaluation(q.segment(startIndex, size));
     }
 }
 
 bool TotalObjective::checkConstraintSatisfaction(const Eigen::VectorXd& q) const {
     bool checkSuccessful = optimization::TotalObjective::checkConstraintSatisfaction(q);
 
-    Eigen::VectorXd trajectory;
-    uint startIndex;
+    std::unordered_map<std::string, std::pair<uint, uint>> indices;
+    trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
-        trajectoryHandler.getTrajectoryForAgent(trajectory, startIndex, tso.plan.agent, q);
-        if (!tso.checkConstraintSatisfaction(trajectory))
+        const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
+        if (!tso.checkConstraintSatisfaction(q.segment(startIndex, size)))
             checkSuccessful = false;
     }
 

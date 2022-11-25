@@ -36,51 +36,12 @@ void MotionTrajectoryHandler::disassemble(const Eigen::VectorXd& stackedTrajecto
     }
 }
 
-void MotionTrajectoryHandler::getTrajectoryForAgent(Eigen::VectorXd& trajectory, uint& startIndex, const rapt::Agent::CSPtr agent,
-                                                    const Eigen::VectorXd& stackedTrajectory) const {
-    checkStackedTrajectory(stackedTrajectory);
+void MotionTrajectoryHandler::getAgentTrajectoryIndices(std::unordered_map<std::string, std::pair<uint, uint>>& trajectoryIndices) const {
+    trajectoryIndices.clear();
     for (uint iter = 0; const samp::Plan& plan : plans) {
-        const uint currentSize = plan.getNumSteps() * plan.agent->getStateSize();
-        if (plan.agent == agent) {
-            trajectory = stackedTrajectory.segment(iter, currentSize);
-            startIndex = iter;
-            return;
-        }
-        iter += currentSize;
-    }
-    LENNY_LOG_ERROR("There seems to be no motion plan for the agent with name `%s`", agent->name.c_str());
-}
-
-void MotionTrajectoryHandler::getAgentStatesForTrajectoryIndex(std::map<std::string, Eigen::VectorXd>& agentStates, const Eigen::VectorXd& stackedTrajectory,
-                                                               const int& index) const {
-    checkStackedTrajectory(stackedTrajectory);
-    agentStates.clear();
-    for (uint iter = 0; const samp::Plan& plan : plans) {
-        const uint currentSize = plan.getNumSteps() * plan.agent->getStateSize();
-        agentStates.insert({plan.agent->name, plan.getAgentStateForTrajectoryIndex(stackedTrajectory.segment(iter, currentSize), index)});
-        iter += currentSize;
-    }
-}
-
-void MotionTrajectoryHandler::getAgentStatesForTrajectoryPercentage(std::map<std::string, Eigen::VectorXd>& agentStates,
-                                                                    const Eigen::VectorXd& stackedTrajectory, const double& percentage) const {
-    checkStackedTrajectory(stackedTrajectory);
-    agentStates.clear();
-    for (uint iter = 0; const samp::Plan& plan : plans) {
-        const uint currentSize = plan.getNumSteps() * plan.agent->getStateSize();
-        agentStates.insert({plan.agent->name, plan.getAgentStateForTrajectoryPercentage(stackedTrajectory.segment(iter, currentSize), percentage)});
-        iter += currentSize;
-    }
-}
-
-void MotionTrajectoryHandler::getAgentStatesForTrajectoryTime(std::map<std::string, Eigen::VectorXd>& agentStates, const Eigen::VectorXd& stackedTrajectory,
-                                                              const double& time) const {
-    checkStackedTrajectory(stackedTrajectory);
-    agentStates.clear();
-    for (uint iter = 0; const samp::Plan& plan : plans) {
-        const uint currentSize = plan.getNumSteps() * plan.agent->getStateSize();
-        agentStates.insert({plan.agent->name, plan.getAgentStateForTrajectoryTime(stackedTrajectory.segment(iter, currentSize), time)});
-        iter += currentSize;
+        const uint size = plan.getNumSteps() * plan.agent->getStateSize();
+        trajectoryIndices.insert({plan.agent->name, {iter, size}});
+        iter += size;
     }
 }
 
