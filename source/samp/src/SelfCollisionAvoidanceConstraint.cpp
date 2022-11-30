@@ -90,8 +90,9 @@ void SelfCollisionAvoidanceConstraint::computeTensor(Eigen::TensorD& p2CpQ2, con
     }
 }
 
-void SelfCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
+bool SelfCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
     updateTs(q);
+    return true;
 }
 
 void SelfCollisionAvoidanceConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {

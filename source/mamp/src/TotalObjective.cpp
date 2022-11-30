@@ -108,15 +108,18 @@ void TotalObjective::preFDEvaluation(const Eigen::VectorXd& q) const {
     }
 }
 
-void TotalObjective::preValueEvaluation(const Eigen::VectorXd& q) const {
-    optimization::TotalObjective::preValueEvaluation(q);
+bool TotalObjective::preValueEvaluation(const Eigen::VectorXd& q) const {
+    bool successful = optimization::TotalObjective::preValueEvaluation(q);
 
     std::unordered_map<std::string, std::pair<uint, uint>> indices;
     trajectoryHandler.getAgentTrajectoryIndices(indices);
     for (const samp::TotalObjective& tso : totalSAMPObjectives) {
         const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
-        tso.preValueEvaluation(q.segment(startIndex, size));
+        if (!tso.preValueEvaluation(q.segment(startIndex, size)))
+            successful = false;
     }
+
+    return successful;
 }
 
 void TotalObjective::preDerivativeEvaluation(const Eigen::VectorXd& q) const {

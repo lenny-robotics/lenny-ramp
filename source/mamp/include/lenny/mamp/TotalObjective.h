@@ -27,7 +27,7 @@ public:
     void preFDEvaluation(const Eigen::VectorXd& q) const override;
 
     //--- Solver
-    void preValueEvaluation(const Eigen::VectorXd& q) const override;
+    bool preValueEvaluation(const Eigen::VectorXd& q) const override;
     void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
 
     //--- Constraints

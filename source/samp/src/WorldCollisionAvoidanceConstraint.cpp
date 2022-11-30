@@ -84,8 +84,9 @@ void WorldCollisionAvoidanceConstraint::computeTensor(Eigen::TensorD& p2CpQ2, co
     }
 }
 
-void WorldCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
+bool WorldCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
     updateTs(q);
+    return true;
 }
 
 void WorldCollisionAvoidanceConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
