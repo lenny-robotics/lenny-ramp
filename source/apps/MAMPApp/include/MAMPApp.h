@@ -1,5 +1,6 @@
 #pragma once
 
+#include <lenny/agents/BDSpotBaseAgent.h>
 #include <lenny/gui/Application.h>
 #include <lenny/gui/Model.h>
 #include <lenny/gui/Plot.h>
@@ -24,15 +25,14 @@ public:
     void mouseButtonCallback(double xPos, double yPos, int button, int action) override;
 
 public:
-    std::array<robot::Robot, 1> robots = {robot::Robot(LENNY_ROBOT_FOLDER "/data/floating_base/robot.urdf", gui::Model::f_loadModel)};
-    std::array<rapt::Agent::SPtr, 2> agents = {
-        std::make_shared<rapt::Agent>("Floating Base 1", robots.back(), Eigen::VectorXd::Zero(robots.back().getStateSize()),
-                                      Eigen::VectorXb::Ones(robots.back().getStateSize())),
-        std::make_shared<rapt::Agent>("Floating Base 2", robots.back(), Eigen::VectorXd::Zero(robots.back().getStateSize()),
-                                      Eigen::VectorXb::Ones(robots.back().getStateSize()))};
+    agents::BDSpotFloatingRobot spotFloatingRobot = agents::BDSpotFloatingRobot(gui::Model::f_loadModel);
+    agents::BDSpotBaseRobot spotBaseRobot = agents::BDSpotBaseRobot(gui::Model::f_loadModel);
+
+    std::array<rapt::Agent::SPtr, 2> agents = {std::make_shared<agents::BDSpotBaseAgent>("Spot Base 1", spotFloatingRobot, spotBaseRobot),
+                                               std::make_shared<agents::BDSpotBaseAgent>("Spot Base 2", spotFloatingRobot, spotBaseRobot)};
     rapt::WorldCollisionHandler worldCollisionHandler;
-    mamp::Planner planner = mamp::Planner({{agents.at(0), 30, 1.0 / targetFramerate}, {agents.at(1), 30, 1.0 / targetFramerate}},
-                                          worldCollisionHandler.primitives, gui::Plot<samp::Plan::PlotType>::f_addPlot);
+    mamp::Planner planner = mamp::Planner({{agents.at(0), 60, 1.0 / 30.0}, {agents.at(1), 60, 1.0 / 30.0}}, worldCollisionHandler.primitives,
+                                          gui::Plot<samp::Plan::PlotType>::f_addPlot);
 
     samp::LinkTarget* selectedTarget = nullptr;
     bool useMultipleTargets = false;

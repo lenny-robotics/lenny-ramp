@@ -8,24 +8,21 @@ namespace lenny {
 MAMPApp::MAMPApp() : gui::Application("MAMPApp") {
     //Setup drawing
     showOrigin = false;
-    showGround = false;
 
-    //Reset initial states
-    for (rapt::Agent::SPtr agent : agents) {
-        Eigen::VectorXd initialRobotState = agent->getInitialRobotState();
-        initialRobotState[0] = tools::utils::getRandomNumberInRange({-1.0, 1.0});
-        initialRobotState[2] = tools::utils::getRandomNumberInRange({-1.0, 1.0});
-        agent->setInitialRobotStateFromRobotState(initialRobotState);
-    }
+    //Reset initial state
+    Eigen::VectorXd initialRobotState = agents.at(1)->getInitialRobotState();
+    initialRobotState[0] = 2.0;
+    initialRobotState[5] = PI;
+    agents.at(1)->setInitialRobotStateFromRobotState(initialRobotState);
     planner.resetMotionTrajectories();
 
     //Set animator time
     planner.animator.setCurrentTimeFromPercentage(1.0);
 
     //Add collision primitives
-    for (auto& agent : agents) {
+    for (rapt::Agent::SPtr agent : agents) {
         agent->collisionPrimitives.clear();
-        agent->addCollisionSphere("base", Eigen::Vector3d::Zero(), 0.2);
+        agent->addCollisionSphere("body", Eigen::Vector3d(0.0, -0.2, 0.0), 0.6);
     }
 }
 
@@ -57,10 +54,19 @@ void MAMPApp::drawGui() {
         ImGui::TreePop();
     }
 
-    for (robot::Robot& robot : robots)
-        robot.drawGui(false);
-    for (rapt::Agent::SPtr& agent : agents)
-        agent->drawGui(true);
+    if (ImGui::TreeNode("Robots")) {
+        spotFloatingRobot.drawGui(false);
+        spotBaseRobot.drawGui(false);
+
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Agents")) {
+        for (rapt::Agent::SPtr& agent : agents)
+            agent->drawGui(true);
+        ImGui::TreePop();
+    }
+
     planner.drawGui();
     worldCollisionHandler.drawGui();
 
