@@ -22,9 +22,8 @@ public:
     //--- Tests
     bool testIndividualFirstDerivatives(const Eigen::VectorXd& q) const override;
     bool testIndividualSecondDerivatives(const Eigen::VectorXd& q) const override;
-
-    void setFDCheckIsBeingApplied(bool isBeingApplied) const override;
-    void preFDEvaluation(const Eigen::VectorXd& q) const override;
+    bool testGradient(const Eigen::VectorXd& x) const override;
+    bool testHessian(const Eigen::VectorXd& x) const override;
 
     //--- Solver
     bool preValueEvaluation(const Eigen::VectorXd& q) const override;

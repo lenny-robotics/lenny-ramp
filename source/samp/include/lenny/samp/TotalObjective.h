@@ -13,6 +13,8 @@ public:
     TotalObjective(TotalObjective&&) = default;
     ~TotalObjective() = default;
 
+    void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
+
 public:
     const Plan& plan;
 };

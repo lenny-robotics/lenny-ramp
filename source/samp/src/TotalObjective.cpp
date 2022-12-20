@@ -31,4 +31,12 @@ TotalObjective::TotalObjective(const Plan& plan, const rapt::WorldCollisionHandl
     subObjectives.emplace_back(std::make_pair(std::make_unique<WorldCollisionAvoidanceConstraint>(plan, worldCollisionPrimitives), 10.0));
 }
 
+void TotalObjective::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
+    optimization::TotalObjective::preDerivativeEvaluation(q);
+
+    for (const auto& [objective, weight] : subObjectives)
+        if (const optimization::Constraint* con = dynamic_cast<optimization::Constraint*>(objective.get()))
+            con->softificationWeights.setOnes(con->getConstraintNumber());
+}
+
 }  // namespace lenny::samp

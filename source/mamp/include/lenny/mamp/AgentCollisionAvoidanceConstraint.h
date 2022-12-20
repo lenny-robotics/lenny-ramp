@@ -19,14 +19,13 @@ public:
 
     bool preValueEvaluation(const Eigen::VectorXd& q) const override;
     void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
-    void preFDEvaluation(const Eigen::VectorXd& q) const override;
 
     void drawGuiContent() override;
 
 private:
-    std::pair<uint, uint> getInfosForPlanIndex(const uint& planIndex) const;                                        //[startIndex, size]
+    std::pair<uint, uint> getInfosForPlanIndex(const uint& planIndex) const;                                      //[startIndex, size]
     uint getTrajectoryStepForPlanIndex(const uint& planIndex, const std::pair<uint, uint>& otherPlanInfo) const;  //[plan list index, trajectory step]
-    void setupPairList(const Eigen::VectorXd& q) const;  //Also directly updates the corresponding t's
+    void setupPairList(const Eigen::VectorXd& q) const;                                                           //Also directly updates the corresponding t's
     void updateTs(const Eigen::VectorXd& q, const bool& forFD = false) const;
 
 public:

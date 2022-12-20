@@ -46,7 +46,8 @@ public:
     mutable tools::Animator animator;
 
     //--- Booleans
-    bool checkDerivatives = false;
+    bool checkIndividualDerivatives = false;
+    bool checkTotalDerivatives = false;
     bool checkConstraints = false;
 };
 

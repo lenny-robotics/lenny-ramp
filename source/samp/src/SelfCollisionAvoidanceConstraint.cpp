@@ -7,6 +7,7 @@ namespace lenny::samp {
 SelfCollisionAvoidanceConstraint::SelfCollisionAvoidanceConstraint(const Plan& plan)
     : optimization::InequalityConstraint("Self Collision Avoidance"), plan(plan) {
     useTensorForHessian = false;
+    fd.f_PreEval = [&](const Eigen::VectorXd& q) -> void { updateTs(q, true); };
     barrier.setStiffness(1.0);
     barrier.setEpsilon(0.005);
 }
@@ -97,10 +98,6 @@ bool SelfCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd&
 
 void SelfCollisionAvoidanceConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
     setupPairList(q);
-}
-
-void SelfCollisionAvoidanceConstraint::preFDEvaluation(const Eigen::VectorXd& q) const {
-    updateTs(q, true);
 }
 
 void SelfCollisionAvoidanceConstraint::drawGuiContent() {
