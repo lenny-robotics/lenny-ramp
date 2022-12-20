@@ -17,7 +17,6 @@ TotalObjective::TotalObjective(const Plan& plan, const rapt::WorldCollisionHandl
                                const double& regularizerWeight)
     : optimization::TotalObjective(description, regularizerWeight), plan(plan) {
     subObjectives.clear();
-
     subObjectives.emplace_back(std::make_pair(std::make_unique<LinkPositionTargetConstraint>(plan), 1.0));
     subObjectives.emplace_back(std::make_pair(std::make_unique<LinkOrientationTargetConstraint>(plan), 0.1));
     subObjectives.emplace_back(std::make_pair(std::make_unique<StateTargetConstraint>(plan), 1.0));

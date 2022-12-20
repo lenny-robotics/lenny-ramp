@@ -7,7 +7,6 @@ namespace lenny::samp {
 WorldCollisionAvoidanceConstraint::WorldCollisionAvoidanceConstraint(const Plan& plan, const rapt::WorldCollisionHandler::PrimitiveList& worldPrimitives)
     : optimization::InequalityConstraint("World Collision Avoidance"), plan(plan), worldPrimitives(worldPrimitives) {
     useTensorForHessian = false;
-    fd.f_PreEval = [&](const Eigen::VectorXd& q) -> void { updateTs(q, true); };
     barrier.setStiffness(1.0);
     barrier.setEpsilon(0.005);
 }
@@ -83,6 +82,10 @@ void WorldCollisionAvoidanceConstraint::computeTensor(Eigen::TensorD& p2CpQ2, co
             iter++;
         }
     }
+}
+
+void WorldCollisionAvoidanceConstraint::preFDEvaluation(const Eigen::VectorXd& q) const {
+    updateTs(q, true);
 }
 
 bool WorldCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {

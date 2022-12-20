@@ -7,7 +7,6 @@ namespace lenny::mamp {
 AgentCollisionAvoidanceConstraint::AgentCollisionAvoidanceConstraint(const std::vector<samp::Plan>& plans)
     : optimization::InequalityConstraint("Agent Collision Avoidance"), plans(plans) {
     useTensorForHessian = false;
-    fd.f_PreEval = [&](const Eigen::VectorXd& q) -> void { updateTs(q, true); };
     barrier.setStiffness(1.0);
     barrier.setEpsilon(0.005);
 }
@@ -115,6 +114,10 @@ void AgentCollisionAvoidanceConstraint::computeTensor(Eigen::TensorD& p2CpQ2, co
         }
         iter++;
     }
+}
+
+void AgentCollisionAvoidanceConstraint::preFDEvaluation(const Eigen::VectorXd& q) const {
+    updateTs(q, true);
 }
 
 bool AgentCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
