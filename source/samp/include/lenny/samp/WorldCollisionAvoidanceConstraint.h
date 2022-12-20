@@ -1,7 +1,7 @@
 #pragma once
 
-#include <lenny/rapt/WorldCollisionHandler.h>
 #include <lenny/optimization/InequalityConstraint.h>
+#include <lenny/rapt/WorldCollisionHandler.h>
 #include <lenny/samp/Plan.h>
 
 #include <unordered_map>
@@ -18,9 +18,9 @@ public:
     void computeJacobian(Eigen::SparseMatrixD& pCpQ, const Eigen::VectorXd& q) const override;
     void computeTensor(Eigen::TensorD& p2CpQ2, const Eigen::VectorXd& q) const override;
 
+    void preFDEvaluation(const Eigen::VectorXd& q) const override;
     bool preValueEvaluation(const Eigen::VectorXd& q) const override;
     void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
-    void preFDEvaluation(const Eigen::VectorXd& q) const override;
 
     void drawGuiContent() override;
 

@@ -17,9 +17,9 @@ public:
     void computeJacobian(Eigen::SparseMatrixD& pCpQ, const Eigen::VectorXd& q) const override;
     void computeTensor(Eigen::TensorD& p2CpQ2, const Eigen::VectorXd& q) const override;
 
+    void preFDEvaluation(const Eigen::VectorXd& q) const override;
     bool preValueEvaluation(const Eigen::VectorXd& q) const override;
     void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
-    void preFDEvaluation(const Eigen::VectorXd& q) const override;
 
     void drawGuiContent() override;
 

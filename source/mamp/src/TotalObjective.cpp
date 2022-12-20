@@ -91,12 +91,6 @@ bool TotalObjective::testIndividualSecondDerivatives(const Eigen::VectorXd& q) c
     return testSuccessful;
 }
 
-void TotalObjective::setFDCheckIsBeingApplied(bool isBeingApplied) const {
-    optimization::TotalObjective::setFDCheckIsBeingApplied(isBeingApplied);
-    for (const samp::TotalObjective& tso : totalSAMPObjectives)
-        tso.setFDCheckIsBeingApplied(isBeingApplied);
-}
-
 void TotalObjective::preFDEvaluation(const Eigen::VectorXd& q) const {
     optimization::TotalObjective::preFDEvaluation(q);
 
@@ -106,6 +100,13 @@ void TotalObjective::preFDEvaluation(const Eigen::VectorXd& q) const {
         const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
         tso.preFDEvaluation(q.segment(startIndex, size));
     }
+}
+
+void TotalObjective::setFDCheckIsBeingApplied(const bool& checkIsBeingApplied) const {
+    optimization::TotalObjective::setFDCheckIsBeingApplied(checkIsBeingApplied);
+
+    for (const samp::TotalObjective& tso : totalSAMPObjectives)
+        tso.setFDCheckIsBeingApplied(checkIsBeingApplied);
 }
 
 bool TotalObjective::preValueEvaluation(const Eigen::VectorXd& q) const {
@@ -131,6 +132,10 @@ void TotalObjective::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
         const auto& [startIndex, size] = indices.at(tso.plan.agent->name);
         tso.preDerivativeEvaluation(q.segment(startIndex, size));
     }
+
+    for (const auto& [objective, weight] : subObjectives)
+        if (const optimization::Constraint* con = dynamic_cast<optimization::Constraint*>(objective.get()))
+            con->softificationWeights.setOnes(con->getConstraintNumber());
 }
 
 bool TotalObjective::checkConstraintSatisfaction(const Eigen::VectorXd& q) const {

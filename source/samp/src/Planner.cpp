@@ -14,11 +14,12 @@ Planner::Planner(const rapt::Agent::SPtr agent, const uint& numSteps, const doub
 
 void Planner::solve(const int& maxIterations) {
     //Check derivatives
-    if (checkDerivatives) {
+    if (checkIndividualDerivatives) {
         objective.testIndividualFirstDerivatives(plan.motionTrajectory);
-        objective.testGradient(plan.motionTrajectory);
-
         objective.testIndividualSecondDerivatives(plan.motionTrajectory);
+    }
+    if (checkTotalDerivatives) {
+        objective.testGradient(plan.motionTrajectory);
         objective.testHessian(plan.motionTrajectory);
     }
 
@@ -59,7 +60,8 @@ void Planner::drawGui() {
         if (Gui::I->TreeNode("Settings")) {
             Gui::I->Checkbox("Is Receding Horizon", isRecedingHorizon);
 
-            Gui::I->Checkbox("Check Derivatives", checkDerivatives);
+            Gui::I->Checkbox("Check Individual Derivatives", checkIndividualDerivatives);
+            Gui::I->Checkbox("Check Total Derivatives", checkTotalDerivatives);
             Gui::I->Checkbox("Check Constraints", checkConstraints);
 
             Gui::I->TreePop();

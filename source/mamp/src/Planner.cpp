@@ -38,11 +38,12 @@ void Planner::solve(const int &maxIterations) {
     trajectoryHandler.assemble(stackedTrajectory);
 
     //Check derivatives
-    if (checkDerivatives) {
+    if (checkIndividualDerivatives) {
         objective.testIndividualFirstDerivatives(stackedTrajectory);
-        objective.testGradient(stackedTrajectory);
-
         objective.testIndividualSecondDerivatives(stackedTrajectory);
+    }
+    if (checkTotalDerivatives) {
+        objective.testGradient(stackedTrajectory);
         objective.testHessian(stackedTrajectory);
     }
 
@@ -94,7 +95,8 @@ void Planner::drawGui() {
         animator.drawGui();
 
         if (Gui::I->TreeNode("Settings")) {
-            Gui::I->Checkbox("Check Derivatives", checkDerivatives);
+            Gui::I->Checkbox("Check Individual Derivatives", checkIndividualDerivatives);
+            Gui::I->Checkbox("Check Total Derivatives", checkTotalDerivatives);
             Gui::I->Checkbox("Check Constraints", checkConstraints);
 
             Gui::I->TreePop();

@@ -116,6 +116,10 @@ void AgentCollisionAvoidanceConstraint::computeTensor(Eigen::TensorD& p2CpQ2, co
     }
 }
 
+void AgentCollisionAvoidanceConstraint::preFDEvaluation(const Eigen::VectorXd& q) const {
+    updateTs(q, true);
+}
+
 bool AgentCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd& q) const {
     updateTs(q);
     return true;
@@ -123,10 +127,6 @@ bool AgentCollisionAvoidanceConstraint::preValueEvaluation(const Eigen::VectorXd
 
 void AgentCollisionAvoidanceConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
     setupPairList(q);
-}
-
-void AgentCollisionAvoidanceConstraint::preFDEvaluation(const Eigen::VectorXd& q) const {
-    updateTs(q, true);
 }
 
 void AgentCollisionAvoidanceConstraint::drawGuiContent() {
