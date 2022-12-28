@@ -32,7 +32,7 @@ void Planner::resetMotionTrajectories() {
         plan.initializeMotionTrajectory();
 }
 
-void Planner::solve(const int &maxIterations) {
+bool Planner::solve(const int &maxIterations) {
     //Assemble motion trajectory
     Eigen::VectorXd stackedTrajectory;
     trajectoryHandler.assemble(stackedTrajectory);
@@ -53,7 +53,7 @@ void Planner::solve(const int &maxIterations) {
     }
 
     //Optimize
-    optimizer.optimize(stackedTrajectory, objective, maxIterations);
+    const bool converged = optimizer.optimize(stackedTrajectory, objective, maxIterations);
 
     //Disassembly motion trajectory
     trajectoryHandler.disassemble(stackedTrajectory);
@@ -72,6 +72,8 @@ void Planner::solve(const int &maxIterations) {
         animator.run = false;
         animator.restart();
     }
+
+    return converged;
 }
 
 void Planner::drawScene() const {

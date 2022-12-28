@@ -12,7 +12,7 @@ Planner::Planner(const rapt::Agent::SPtr agent, const uint& numSteps, const doub
     optimizer.printInfos = true;
 }
 
-void Planner::solve(const int& maxIterations) {
+bool Planner::solve(const int& maxIterations) {
     //Check derivatives
     if (checkIndividualDerivatives) {
         objective.testIndividualFirstDerivatives(plan.motionTrajectory);
@@ -29,7 +29,7 @@ void Planner::solve(const int& maxIterations) {
     }
 
     //Optimize
-    optimizer.optimize(plan.motionTrajectory, objective, maxIterations);
+    const bool converged = optimizer.optimize(plan.motionTrajectory, objective, maxIterations);
 
     //Update plots
     plan.updatePlots(isRecedingHorizon);
@@ -42,6 +42,8 @@ void Planner::solve(const int& maxIterations) {
         animator.run = false;
         animator.restart();
     }
+
+    return converged;
 }
 
 void Planner::drawScene() const {

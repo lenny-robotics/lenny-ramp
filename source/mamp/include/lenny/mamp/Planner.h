@@ -24,7 +24,7 @@ public:
     void resetMotionTrajectories();
 
     //--- Computation
-    void solve(const int &maxIterations);
+    bool solve(const int &maxIterations);
 
     //--- Drawing
     void drawScene() const;
