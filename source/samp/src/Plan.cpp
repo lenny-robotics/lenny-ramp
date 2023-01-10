@@ -205,8 +205,8 @@ void Plan::updatePlots(const bool& isRecedingHorizon) {
 
 void Plan::drawScene(const double& currentAnimationTime, const bool& isRecedingHorizon) const {
     agent->drawScene(rapt::Agent::MotionTrajectory(motionTrajectory, numSteps, deltaT), currentAnimationTime, isRecedingHorizon);
-    if (showGripperTrajectories)
-        drawGripperTrajectories();
+    if (showEndEffectorTrajectories)
+        drawEndEffectorTrajectories();
     if (showSkeletonTrajectory)
         drawSkeletonTrajectory();
     if (showVisualsTrajectory)
@@ -217,11 +217,11 @@ void Plan::drawScene(const double& currentAnimationTime, const bool& isRecedingH
         drawStateTargets();
 }
 
-void Plan::drawGripperTrajectories() const {
-    for (const rapt::Gripper::UPtr& gripper : agent->grippers) {
+void Plan::drawEndEffectorTrajectories() const {
+    for (const auto& [eeName, ee] : agent->robot.endEffectors) {
         std::vector<Eigen::Vector3d> points;
         for (int i = -1; i < (int)numSteps; i += (int)trajectoryDrawingInterval)
-            points.emplace_back(agent->computeGlobalPoint(getAgentStateForTrajectoryIndex(i), gripper->localTrafo.position, gripper->linkName));
+            points.emplace_back(agent->computeGlobalPoint(getAgentStateForTrajectoryIndex(i), ee.localGraspTrafo.position, ee.linkName));
         tools::Renderer::I->drawTrajectory(points, 0.01, Eigen::Vector4d(0.0, 0.0, 0.75, 0.5), true);
     }
 }
@@ -240,8 +240,7 @@ void Plan::drawSkeletonTrajectory() const {
 void Plan::drawVisualsTrajectory() const {
     for (int i = -1; i < (int)numSteps; i += (int)trajectoryDrawingInterval) {
         const Eigen::VectorXd agentState = getAgentStateForTrajectoryIndex(i);
-        const Eigen::VectorXd robotState = agent->getRobotStateFromAgentState(agentState);
-        agent->robot.drawVisuals(robotState, std::nullopt, 0.5);
+        agent->drawVisuals(agentState, std::nullopt, 0.5);
     }
 }
 
@@ -338,7 +337,7 @@ void Plan::drawGui(const bool& withTrajectoryStettings) {
         }
 
         if (Gui::I->TreeNode("Drawing")) {
-            Gui::I->Checkbox("Show Gripper Trajectories", showGripperTrajectories);
+            Gui::I->Checkbox("Show EndEffector Trajectories", showEndEffectorTrajectories);
             Gui::I->Checkbox("Show Skeleton Trajectory", showSkeletonTrajectory);
             Gui::I->Checkbox("Show Visuals Trajectory", showVisualsTrajectory);
             Gui::I->Checkbox("Show Link Targets", showLinkTargets);

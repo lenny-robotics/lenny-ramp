@@ -54,7 +54,7 @@ public:
 
 private:
     //--- Drawing
-    void drawGripperTrajectories() const;
+    void drawEndEffectorTrajectories() const;
     void drawSkeletonTrajectory() const;
     void drawVisualsTrajectory() const;
     void drawLinkTargets() const;
@@ -72,7 +72,7 @@ public:
     std::vector<StateRegularizer> stateRegularizers;
 
     //--- Drawing
-    mutable bool showGripperTrajectories = true;
+    mutable bool showEndEffectorTrajectories = true;
     mutable bool showSkeletonTrajectory = true;
     mutable bool showVisualsTrajectory = false;
     mutable bool showLinkTargets = true;

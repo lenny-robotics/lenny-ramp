@@ -72,8 +72,7 @@ void SAMPApp::mouseButtonCallback(double xPos, double yPos, int button, int acti
                 linkTargets.clear();
 
             const Eigen::VectorXd robotState = agent->getRobotStateFromAgentState(planner.plan.getAgentStateForTrajectoryTime(planner.animator.currentTime));
-            const auto firstLink =
-                robot.getFirstLinkHitByRay(robotState, camera.getRayFromScreenCoordinates(xPos, yPos), robot.showVisuals, robot.showSkeleton);
+            const auto firstLink = robot.getFirstLinkHitByRay(robotState, camera.getRayFromScreenCoordinates(xPos, yPos));
             if (firstLink.has_value()) {
                 const auto& [linkName, selectedPoint] = firstLink.value();
 

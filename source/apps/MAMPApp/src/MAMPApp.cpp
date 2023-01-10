@@ -101,8 +101,7 @@ void MAMPApp::mouseButtonCallback(double xPos, double yPos, int button, int acti
                 std::vector<samp::LinkTarget>& linkTargets = plan.linkTargets;
                 const robot::Robot& robot = plan.agent->robot;
                 const Eigen::VectorXd robotState = plan.agent->getRobotStateFromAgentState(plan.getAgentStateForTrajectoryTime(planner.animator.currentTime));
-                const auto firstLink =
-                    robot.getFirstLinkHitByRay(robotState, camera.getRayFromScreenCoordinates(xPos, yPos), robot.showVisuals, robot.showSkeleton);
+                const auto firstLink = robot.getFirstLinkHitByRay(robotState, camera.getRayFromScreenCoordinates(xPos, yPos));
                 if (firstLink.has_value()) {
                     if (!useMultipleTargets)
                         linkTargets.clear();

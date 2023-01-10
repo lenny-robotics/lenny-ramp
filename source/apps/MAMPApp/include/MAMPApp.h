@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lenny/agents/BDSpotBaseAgent.h>
+#include <lenny/bd_spot/Agent.h>
 #include <lenny/gui/Application.h>
 #include <lenny/gui/Model.h>
 #include <lenny/gui/Plot.h>
@@ -25,11 +25,11 @@ public:
     void mouseButtonCallback(double xPos, double yPos, int button, int action) override;
 
 public:
-    agents::BDSpotFloatingRobot spotFloatingRobot = agents::BDSpotFloatingRobot(gui::Model::f_loadModel);
-    agents::BDSpotBaseRobot spotBaseRobot = agents::BDSpotBaseRobot(gui::Model::f_loadModel);
+    bd_spot::FloatingRobot spotFloatingRobot = bd_spot::FloatingRobot(gui::Model::f_loadModel);
+    bd_spot::BaseRobot spotBaseRobot = bd_spot::BaseRobot(gui::Model::f_loadModel);
 
-    std::array<rapt::Agent::SPtr, 2> agents = {std::make_shared<agents::BDSpotBaseAgent>("Spot Base 1", spotFloatingRobot, spotBaseRobot),
-                                               std::make_shared<agents::BDSpotBaseAgent>("Spot Base 2", spotFloatingRobot, spotBaseRobot)};
+    std::array<rapt::Agent::SPtr, 2> agents = {std::make_shared<bd_spot::BaseAgent>("Spot Base 1", spotFloatingRobot, spotBaseRobot),
+                                               std::make_shared<bd_spot::BaseAgent>("Spot Base 2", spotFloatingRobot, spotBaseRobot)};
     rapt::WorldCollisionHandler worldCollisionHandler;
     mamp::Planner planner = mamp::Planner({{agents.at(0), 60, 1.0 / 30.0}, {agents.at(1), 60, 1.0 / 30.0}}, worldCollisionHandler.primitives,
                                           gui::Plot<samp::Plan::PlotType>::f_addPlot);
