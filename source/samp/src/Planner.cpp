@@ -37,7 +37,8 @@ bool Planner::solve(const int& maxIterations) {
     //Update boundary conditions
     if (isRecedingHorizon) {
         const Eigen::VectorXd newAgentState = plan.getAgentStateForTrajectoryIndex(0);
-        plan.agent->setInitialRobotVelocityFromAgentVelocity((newAgentState - plan.agent->getInitialAgentState()) / plan.getDeltaT());
+        plan.agent->setInitialRobotVelocityFromAgentVelocity((newAgentState - plan.agent->getInitialAgentState()) /
+                                                             plan.getDeltaT());  //ToDo: is PI VS -PI a problem here?
         plan.agent->setInitialRobotStateFromAgentState(newAgentState);
         animator.run = false;
         animator.restart();

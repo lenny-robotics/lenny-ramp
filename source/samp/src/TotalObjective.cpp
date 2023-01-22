@@ -1,3 +1,4 @@
+#include <lenny/samp/AccelerationLimitsConstraint.h>
 #include <lenny/samp/LinkAccelerationRegularizerObjective.h>
 #include <lenny/samp/LinkOrientationTargetConstraint.h>
 #include <lenny/samp/LinkPositionTargetConstraint.h>
@@ -26,6 +27,7 @@ TotalObjective::TotalObjective(const Plan& plan, const rapt::WorldCollisionHandl
     subObjectives.emplace_back(std::make_pair(std::make_unique<LinkAccelerationRegularizerObjective>(plan), 0.01));
     subObjectives.emplace_back(std::make_pair(std::make_unique<PositionLimitsConstraint>(plan), 10.0));
     subObjectives.emplace_back(std::make_pair(std::make_unique<VelocityLimitsConstraint>(plan), 10.0));
+    subObjectives.emplace_back(std::make_pair(std::make_unique<AccelerationLimitsConstraint>(plan), 10.0));
     subObjectives.emplace_back(std::make_pair(std::make_unique<SelfCollisionAvoidanceConstraint>(plan), 10.0));
     subObjectives.emplace_back(std::make_pair(std::make_unique<WorldCollisionAvoidanceConstraint>(plan, worldCollisionPrimitives), 10.0));
 }

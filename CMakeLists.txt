@@ -21,7 +21,7 @@ file(MAKE_DIRECTORY "logs")
 set(CMAKE_CXX_STANDARD 20)
 
 # Fetch lenny repository
-fetch_lenny_repository(robot master)
+fetch_lenny_repository(robot additional-constraints) #ToDo: change to master
 
 # Source code
 add_subdirectory(source)
