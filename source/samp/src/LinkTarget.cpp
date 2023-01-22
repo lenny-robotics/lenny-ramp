@@ -38,7 +38,6 @@ void LinkTarget::drawGui(const std::string& description) {
                 Gui::I->Input("Global", position->global);
                 Gui::I->Input("Local", position->local);
                 Gui::I->Input("Weights", position->weights);
-            } else {
                 if (Gui::I->Button("Deactivate"))
                     position = std::nullopt;
             }
@@ -50,7 +49,6 @@ void LinkTarget::drawGui(const std::string& description) {
                 Gui::I->Slider("Global", orientation->global);
                 Gui::I->Slider("Local", orientation->local);
                 Gui::I->Input("Weights", orientation->weights);
-            } else {
                 if (Gui::I->Button("Deactivate"))
                     orientation = std::nullopt;
             }
