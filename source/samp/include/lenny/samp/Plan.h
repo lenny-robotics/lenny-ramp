@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lenny/rapt/Agent.h>
+#include <lenny/samp/LinkLimits.h>
 #include <lenny/samp/LinkRegularizer.h>
 #include <lenny/samp/LinkTarget.h>
 #include <lenny/samp/StateRegularizer.h>
@@ -67,6 +68,7 @@ public:
 
     //--- Lists
     std::vector<LinkTarget> linkTargets;
+    std::vector<LinkLimits> linkLimits;  //ToDo: Add more schtuff
     std::vector<LinkRegularizer> linkRegularizers;
     std::vector<StateTarget> stateTargets;
     std::vector<StateRegularizer> stateRegularizers;
