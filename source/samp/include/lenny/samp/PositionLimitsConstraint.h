@@ -30,7 +30,7 @@ private:
     const Plan& plan;
 
     enum LIMIT_TYPE { LOWER, UPPER };
-    typedef std::tuple<uint, double, double, LIMIT_TYPE> LimitInfo;  //[trajectoryIndex, limit, delta, type]
+    typedef std::tuple<uint, double, LIMIT_TYPE> LimitInfo;  //[trajectoryIndex, limit, type]
     mutable std::vector<LimitInfo> limitInfos;
 };
 
