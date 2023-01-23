@@ -8,6 +8,7 @@ namespace lenny {
 SAMPApp::SAMPApp() : gui::Application("SAMPApp") {
     agent->showCollisionPrimitives = true;
     planner.animator.setCurrentTimeFromPercentage(1.0);
+    planner.isRecedingHorizon = true;
 }
 
 void SAMPApp::restart() {

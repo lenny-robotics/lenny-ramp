@@ -1,10 +1,10 @@
 #pragma once
 
+#include <lenny/bd_spot/Agent.h>
 #include <lenny/gui/Application.h>
 #include <lenny/gui/Model.h>
 #include <lenny/gui/Plot.h>
 #include <lenny/samp/Planner.h>
-#include <lenny/ur_5e/Agent.h>
 
 namespace lenny {
 
@@ -25,11 +25,12 @@ public:
     void mouseButtonCallback(double xPos, double yPos, int button, int action) override;
 
 public:
-    ur_5e::Robot robot = ur_5e::Robot(gui::Model::f_loadModel);
-    rapt::Agent::SPtr agent = std::make_shared<ur_5e::Agent>("Agent", robot);
+    bd_spot::ArmRobot robot = bd_spot::ArmRobot(gui::Model::f_loadModel);
+    bd_spot::BaseRobot baseRobot = bd_spot::BaseRobot(gui::Model::f_loadModel);
+    rapt::Agent::SPtr agent = std::make_shared<bd_spot::ArmAgent>("Agent", robot, baseRobot);
 
     rapt::WorldCollisionHandler worldCollisionHandler;
-    samp::Planner planner = samp::Planner(agent, 60, 1.0 / targetFramerate, worldCollisionHandler.primitives, gui::Plot<samp::Plan::PlotType>::f_addPlot);
+    samp::Planner planner = samp::Planner(agent, 1, 1.0 / targetFramerate, worldCollisionHandler.primitives, gui::Plot<samp::Plan::PlotType>::f_addPlot);
 
     samp::LinkTarget* selectedTarget = nullptr;
     bool useOrientationTargets = true;

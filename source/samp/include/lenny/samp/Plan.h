@@ -60,6 +60,7 @@ private:
     void drawVisualsTrajectory() const;
     void drawLinkTargets() const;
     void drawStateTargets() const;
+    void drawLinkLimits() const;
 
 public:
     //--- Public members
@@ -68,10 +69,10 @@ public:
 
     //--- Lists
     std::vector<LinkTarget> linkTargets;
-    std::vector<LinkLimits> linkLimits;  //ToDo: Add more schtuff
     std::vector<LinkRegularizer> linkRegularizers;
     std::vector<StateTarget> stateTargets;
     std::vector<StateRegularizer> stateRegularizers;
+    std::vector<LinkLimits> linkLimits;
 
     //--- Drawing
     mutable bool showEndEffectorTrajectories = true;
@@ -79,6 +80,7 @@ public:
     mutable bool showVisualsTrajectory = false;
     mutable bool showLinkTargets = true;
     mutable bool showStateTargets = true;
+    mutable bool showLinkLimits = true;
 
     mutable uint trajectoryDrawingInterval = 1;
 

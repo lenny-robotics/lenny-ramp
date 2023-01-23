@@ -215,6 +215,8 @@ void Plan::drawScene(const double& currentAnimationTime, const bool& isRecedingH
         drawLinkTargets();
     if (showStateTargets)
         drawStateTargets();
+    if (showLinkLimits)
+        drawLinkLimits();
 }
 
 void Plan::drawEndEffectorTrajectories() const {
@@ -275,6 +277,17 @@ void Plan::drawStateTargets() const {
     }
 }
 
+void Plan::drawLinkLimits() const {
+    using tools::Renderer;
+    for (const LinkLimits& limits : linkLimits) {
+        if (limits.linear.has_value() && limits.linear->position.has_value()) {
+            const Eigen::Vector3d com = 0.5 * (limits.linear->position->upper + limits.linear->position->lower);
+            const Eigen::Vector3d dim = limits.linear->position->upper - limits.linear->position->lower;
+            Renderer::I->drawCuboid(com, Eigen::QuaternionD::Identity(), dim, Eigen::Vector4d(0.75, 0.75, 0.75, 0.5));
+        }
+    }
+}
+
 void Plan::drawGui(const bool& withTrajectoryStettings) {
     using tools::Gui;
     if (Gui::I->TreeNode(("Plan - `" + agent->name + "`").c_str())) {
@@ -332,6 +345,13 @@ void Plan::drawGui(const bool& withTrajectoryStettings) {
                 Gui::I->TreePop();
             }
 
+            if (Gui::I->TreeNode("Link Limits")) {
+                int iter = 0;
+                for (auto& entry : linkLimits)
+                    entry.drawGui(std::to_string(iter++));
+                Gui::I->TreePop();
+            }
+
             Gui::I->PopItemWidth();
             Gui::I->TreePop();
         }
@@ -342,6 +362,7 @@ void Plan::drawGui(const bool& withTrajectoryStettings) {
             Gui::I->Checkbox("Show Visuals Trajectory", showVisualsTrajectory);
             Gui::I->Checkbox("Show Link Targets", showLinkTargets);
             Gui::I->Checkbox("Show State Targets", showStateTargets);
+            Gui::I->Checkbox("Show Link Limits", showLinkLimits);
 
             Gui::I->Slider("Trajectory Drawing Interval", trajectoryDrawingInterval, 1, numSteps - 1);
 
