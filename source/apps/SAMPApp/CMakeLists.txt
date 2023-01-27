@@ -10,7 +10,7 @@ add_executable(${PROJECT_NAME} ${sources})
 target_link_libraries(${PROJECT_NAME}
         PUBLIC lenny::samp
         PUBLIC lenny::gui
-        PUBLIC lenny::bd_spot
+        PUBLIC lenny::ur_5e
         )
 
 target_include_directories(${PROJECT_NAME}
