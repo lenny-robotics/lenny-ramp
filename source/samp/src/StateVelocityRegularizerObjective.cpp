@@ -13,7 +13,7 @@ double StateVelocityRegularizerObjective::computeValue(const Eigen::VectorXd& q)
         Eigen::VectorXd q_im1 = plan.getAgentStateForTrajectoryIndex(q, indexRange.first - 1);
         for (int i = indexRange.first; i <= indexRange.second; i++) {
             const Eigen::VectorXd q_i = plan.getAgentStateForTrajectoryIndex(q, i);
-            const Eigen::VectorXd vel = q_i - q_im1;
+            const Eigen::VectorXd vel = plan.agent->estimateAgentVelocity(q_i, q_im1, 1.0);
             value += 0.5 * vel.dot(vel.cwiseProduct(agentWeights));
             q_im1 = q_i;
         }
@@ -31,7 +31,7 @@ void StateVelocityRegularizerObjective::computeGradient(Eigen::VectorXd& pVpQ, c
         Eigen::VectorXd q_im1 = plan.getAgentStateForTrajectoryIndex(q, indexRange.first - 1);
         for (int i = indexRange.first; i <= indexRange.second; i++) {
             const Eigen::VectorXd q_i = plan.getAgentStateForTrajectoryIndex(q, i);
-            const Eigen::VectorXd vel = q_i - q_im1;
+            const Eigen::VectorXd vel = plan.agent->estimateAgentVelocity(q_i, q_im1, 1.0);
             const Eigen::VectorXd vec = vel.cwiseProduct(agentWeights);
             pVpQ.segment(i * stateSize, stateSize) += vec;
             if (i - 1 >= 0)

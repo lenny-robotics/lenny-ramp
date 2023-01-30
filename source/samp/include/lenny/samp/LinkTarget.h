@@ -13,7 +13,7 @@ public:
     struct Target {
         Target(const T& global, const T& local, const Eigen::Vector3d& weights) : global(global), local(local), weights(weights) {}
 
-        void drawGui(const std::string& description);
+        void drawGui();
 
         T global, local;
         Eigen::Vector3d weights;

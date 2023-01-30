@@ -11,19 +11,12 @@ public:
     //--- Limits
     template <typename T>
     struct Limits {
-        struct Entry {
-            Entry(const Eigen::Vector3d& lower, const Eigen::Vector3d& upper, const Eigen::Vector3d& weights) : lower(lower), upper(upper), weights(weights) {}
+        Limits(const T& local, const Eigen::Vector3d& lower, const Eigen::Vector3d& upper) : local(local), lower(lower), upper(upper) {}
 
-            Eigen::Vector3d lower, upper, weights;
-            void drawGui(const std::string& description);
-        };
-
-        Limits(const T& local) : local(local) {}
+        void drawGui();
 
         T local;
-        std::optional<Entry> position = std::nullopt;
-        std::optional<Entry> velocity = std::nullopt;
-        std::optional<Entry> acceleration = std::nullopt;
+        Eigen::Vector3d lower, upper;
     };
     typedef Limits<Eigen::Vector3d> Linear;
     typedef Limits<Eigen::QuaternionD> Angular;

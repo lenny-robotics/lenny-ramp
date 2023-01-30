@@ -3,7 +3,11 @@
 namespace lenny::samp {
 
 StateVelocityLimitsConstraint::StateVelocityLimitsConstraint(const Plan& plan)
-    : StateLimitsConstraint("State Velocity Limits", plan, robot::Robot::VELOCITY, 0.01, 0.1) {}
+    : StateLimitsConstraint("State Velocity Limits", plan, robot::Robot::VELOCITY, 0.1, 1.0) {}
+
+void StateVelocityLimitsConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
+    setupLimitInfos(q, plan.getDeltaT());
+}
 
 double StateVelocityLimitsConstraint::computeValue(const Eigen::VectorXd& q, const int& index) const {
     const int stateSize = plan.agent->getStateSize();

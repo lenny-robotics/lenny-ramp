@@ -66,7 +66,9 @@ bool Planner::solve(const int &maxIterations) {
     if (isRecedingHorizon) {
         for (samp::Plan &plan : plans) {
             const Eigen::VectorXd newAgentState = plan.getAgentStateForTrajectoryIndex(0);
-            plan.agent->setInitialRobotVelocityFromAgentVelocity((newAgentState - plan.agent->getInitialAgentState()) / plan.getDeltaT());
+            const Eigen::VectorXd currentAgentState = plan.agent->getInitialAgentState();
+            const Eigen::VectorXd newAgentVelocity = plan.agent->estimateAgentVelocity(newAgentState, currentAgentState, plan.getDeltaT());
+            plan.agent->setInitialRobotVelocityFromAgentVelocity(newAgentVelocity);
             plan.agent->setInitialRobotStateFromAgentState(newAgentState);
         }
         animator.run = false;

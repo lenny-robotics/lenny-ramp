@@ -63,11 +63,7 @@ void StateLimitsConstraint::drawGuiContent() {
     tools::Gui::I->Checkbox("Print Limit Infos", printLimitInfos);
 }
 
-void StateLimitsConstraint::preDerivativeEvaluation(const Eigen::VectorXd& q) const {
-    setupLimitInfos(q);
-}
-
-void StateLimitsConstraint::setupLimitInfos(const Eigen::VectorXd& q) const {
+void StateLimitsConstraint::setupLimitInfos(const Eigen::VectorXd& q, const double& dt) const {
     //Clear list
     limitInfos.clear();
 
@@ -86,14 +82,14 @@ void StateLimitsConstraint::setupLimitInfos(const Eigen::VectorXd& q) const {
             const double value = computeValue(q, index);
 
             //lower limit is active
-            if (value - limit->first < testFactor) {
+            if (value - limit->first < testFactor / dt) {
                 limitInfos.push_back({index, limit->first, LOWER});
                 if (printLimitInfos)
                     LENNY_LOG_DEBUG("Added LOWER limit for DOF '%s' at trajectory step '%d'", plan.agent->getDescriptionForDofIndex(i).c_str(), j)
             }
 
             //upper limit is active
-            if (limit->second - value < testFactor) {
+            if (limit->second - value < testFactor / dt) {
                 limitInfos.push_back({index, limit->second, UPPER});
                 if (printLimitInfos)
                     LENNY_LOG_DEBUG("Added UPPER limit for DOF '%s' at trajectory step '%d'", plan.agent->getDescriptionForDofIndex(i).c_str(), j)

@@ -14,7 +14,7 @@ double StateAccelerationRegularizerObjective::computeValue(const Eigen::VectorXd
         Eigen::VectorXd q_im1 = plan.getAgentStateForTrajectoryIndex(q, indexRange.first - 1);
         for (int i = indexRange.first; i <= indexRange.second; i++) {
             const Eigen::VectorXd q_i = plan.getAgentStateForTrajectoryIndex(q, i);
-            const Eigen::VectorXd acc = q_i - 2.0 * q_im1 + q_im2;
+            const Eigen::VectorXd acc = plan.agent->estimateAgentAcceleration(q_i, q_im1, q_im2, 1.0);
             value += 0.5 * acc.dot(acc.cwiseProduct(agentWeights));
             q_im2 = q_im1;
             q_im1 = q_i;
@@ -34,7 +34,7 @@ void StateAccelerationRegularizerObjective::computeGradient(Eigen::VectorXd& pVp
         Eigen::VectorXd q_im1 = plan.getAgentStateForTrajectoryIndex(q, indexRange.first - 1);
         for (int i = indexRange.first; i <= indexRange.second; i++) {
             const Eigen::VectorXd q_i = plan.getAgentStateForTrajectoryIndex(q, i);
-            const Eigen::VectorXd acc = q_i - 2.0 * q_im1 + q_im2;
+            const Eigen::VectorXd acc = plan.agent->estimateAgentAcceleration(q_i, q_im1, q_im2, 1.0);
             const Eigen::VectorXd vec = acc.cwiseProduct(agentWeights);
             pVpQ.segment(i * stateSize, stateSize) += vec;
             if (i - 1 >= 0)

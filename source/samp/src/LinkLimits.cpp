@@ -3,16 +3,12 @@
 
 namespace lenny::samp {
 
-template <typename T_LIMITS>
-void LinkLimits::Limits<T_LIMITS>::Entry::drawGui(const std::string& description) {
+template <typename T>
+void LinkLimits::Limits<T>::Limits::drawGui() {
     using tools::Gui;
-    if (Gui::I->TreeNode(description.c_str())) {
-        Gui::I->Input("Lower", lower);
-        Gui::I->Input("Upper", upper);
-        Gui::I->Input("Weights", weights);
-
-        Gui::I->TreePop();
-    }
+    Gui::I->Input("Local", local);
+    Gui::I->Input("Lower", lower);
+    Gui::I->Input("Upper", upper);
 }
 
 LinkLimits::LinkLimits(const rapt::Agent::CSPtr& agent, const std::string& linkName, const PercentageRange& range, const Linear& linear, const Angular& angular)
@@ -41,38 +37,26 @@ LinkLimits::LinkLimits(const rapt::Agent::CSPtr& agent, const std::string& linkN
 
 void LinkLimits::drawGui(const std::string& description) {
     using tools::Gui;
-    if (Gui::I->TreeNode(("Link Target - " + description).c_str())) {
+    if (Gui::I->TreeNode(("Link Limits - " + description).c_str())) {
         Gui::I->Text("Link: %s", linkName.c_str());
         range.drawGui("Range");
 
-        if (linear.has_value()) {
-            if (Gui::I->TreeNode("Linear")) {
-                Gui::I->Input("Local", linear->local);
-                if (linear->position.has_value())
-                    linear->position->drawGui("Position");
-                if (linear->velocity.has_value())
-                    linear->velocity->drawGui("Velocity");
-                if (linear->acceleration.has_value())
-                    linear->acceleration->drawGui("Acceleration");
+        if (Gui::I->TreeNode("Linear")) {
+            if (linear.has_value()) {
+                linear->drawGui();
                 if (Gui::I->Button("Deactivate"))
                     linear = std::nullopt;
-                Gui::I->TreePop();
             }
+            Gui::I->TreePop();
         }
 
-        if (angular.has_value()) {
-            if (Gui::I->TreeNode("Angular")) {
-                Gui::I->Slider("Local", angular->local);
-                if (angular->position.has_value())
-                    angular->position->drawGui("Position");
-                if (angular->velocity.has_value())
-                    angular->velocity->drawGui("Velocity");
-                if (angular->acceleration.has_value())
-                    angular->acceleration->drawGui("Acceleration");
+        if (Gui::I->TreeNode("Angular")) {
+            if (angular.has_value()) {
+                angular->drawGui();
                 if (Gui::I->Button("Deactivate"))
                     angular = std::nullopt;
-                Gui::I->TreePop();
             }
+            Gui::I->TreePop();
         }
 
         Gui::I->TreePop();

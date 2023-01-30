@@ -9,6 +9,8 @@ public:
     StatePositionLimitsConstraint(const Plan& plan);
     ~StatePositionLimitsConstraint() = default;
 
+    void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
+
 private:
     double computeValue(const Eigen::VectorXd& q, const int& index) const override;
     std::vector<std::pair<double, int>> computeValueDerivative(const Eigen::VectorXd& q, const int& index) const override;

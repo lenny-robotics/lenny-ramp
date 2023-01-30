@@ -9,9 +9,14 @@ SAMPApp::SAMPApp() : gui::Application("SAMPApp") {
     agent->showCollisionPrimitives = true;
     planner.animator.setCurrentTimeFromPercentage(1.0);
     planner.isRecedingHorizon = true;
+
+    samp::LinkLimits::Linear linear(Eigen::Vector3d::Zero(), -0.5 * Eigen::Vector3d::Ones(), 0.5 * Eigen::Vector3d::Ones());
+    planner.plan.linkPositionLimits.push_back(samp::LinkLimits(agent, "wrist_3_link", samp::PercentageRange({0.0, 1.0}), linear));
 }
 
 void SAMPApp::restart() {
+    agent->setInitialRobotStateFromRobotState(robot.getDefaultState());
+    agent->setInitialRobotVelocityFromRobotVelocity(Eigen::VectorXd::Zero(robot.getStateSize()));
     planner.plan.initializeMotionTrajectory();
 }
 

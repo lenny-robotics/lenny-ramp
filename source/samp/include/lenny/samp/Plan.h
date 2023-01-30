@@ -69,10 +69,11 @@ public:
 
     //--- Lists
     std::vector<LinkTarget> linkTargets;
-    std::vector<LinkRegularizer> linkRegularizers;
     std::vector<StateTarget> stateTargets;
     std::vector<StateRegularizer> stateRegularizers;
-    std::vector<LinkLimits> linkLimits;
+    std::vector<LinkRegularizer> linkRegularizers;
+    std::vector<LinkLimits> linkPositionLimits;
+    std::vector<LinkLimits> linkVelocityLimits;
 
     //--- Drawing
     mutable bool showEndEffectorTrajectories = true;

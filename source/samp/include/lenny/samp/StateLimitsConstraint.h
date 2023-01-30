@@ -3,8 +3,6 @@
 #include <lenny/optimization/InequalityConstraint.h>
 #include <lenny/samp/Plan.h>
 
-#include <functional>
-
 namespace lenny::samp {
 
 class StateLimitsConstraint : public optimization::InequalityConstraint {
@@ -18,12 +16,10 @@ public:
     void computeJacobian(Eigen::SparseMatrixD& pCpQ, const Eigen::VectorXd& q) const override;
     void computeTensor(Eigen::TensorD& p2CpQ2, const Eigen::VectorXd& q) const override;
 
-    void preDerivativeEvaluation(const Eigen::VectorXd& q) const override;
-
     void drawGuiContent() override;
 
 protected:
-    void setupLimitInfos(const Eigen::VectorXd& q) const;
+    void setupLimitInfos(const Eigen::VectorXd& q, const double& dt) const;
 
     virtual double computeValue(const Eigen::VectorXd& q, const int& index) const = 0;
     virtual std::vector<std::pair<double, int>> computeValueDerivative(const Eigen::VectorXd& q, const int& index) const = 0;
