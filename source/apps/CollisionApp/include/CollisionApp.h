@@ -13,12 +13,13 @@ public:
     ~CollisionApp() = default;
 
     //--- Process
-    void restart() override;
-    void process() override;
+    void restart();
+    void process();
 
     //--- Drawing
-    void drawScene() const override;
+    void drawScene() const;
     void drawGui() override;
+    void drawGuizmo() override;
 
 private:
     //--- Helpers

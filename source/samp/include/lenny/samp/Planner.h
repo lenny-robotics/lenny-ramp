@@ -1,9 +1,9 @@
 #pragma once
 
 #include <lenny/optimization/NewtonOptimizer.h>
+#include <lenny/rapt/Animator.h>
 #include <lenny/samp/Plan.h>
 #include <lenny/samp/TotalObjective.h>
-#include <lenny/tools/Animator.h>
 
 namespace lenny::samp {
 
@@ -29,7 +29,7 @@ public:
     optimization::NewtonOptimizer optimizer;
 
     //--- Animation
-    mutable tools::Animator animator;
+    mutable rapt::Animator animator;
 
     //--- Booleans
     bool checkIndividualDerivatives = false;

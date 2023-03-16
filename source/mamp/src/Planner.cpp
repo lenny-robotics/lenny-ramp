@@ -97,6 +97,7 @@ void Planner::drawGui() {
         animator.drawGui();
 
         if (Gui::I->TreeNode("Settings")) {
+            Gui::I->Checkbox("Is Receding Horizon", isRecedingHorizon);
             Gui::I->Checkbox("Check Individual Derivatives", checkIndividualDerivatives);
             Gui::I->Checkbox("Check Total Derivatives", checkTotalDerivatives);
             Gui::I->Checkbox("Check Constraints", checkConstraints);

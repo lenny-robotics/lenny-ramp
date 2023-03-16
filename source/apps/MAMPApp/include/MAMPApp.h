@@ -14,15 +14,16 @@ public:
     ~MAMPApp() = default;
 
     //--- Process
-    void restart() override;
-    void process() override;
+    void restart();
+    void process(const double& dt);
 
     //--- Drawing
-    void drawScene() const override;
+    void drawScene() const;
     void drawGui() override;
+    void drawGuizmo() override;
 
     //--- Interaction
-    void mouseButtonCallback(double xPos, double yPos, int button, int action) override;
+    void mouseButtonCallback(double xPos, double yPos, Ray ray, int button, int action);
 
 public:
     bd_spot::FloatingRobot spotFloatingRobot = bd_spot::FloatingRobot(gui::Model::f_loadModel);
