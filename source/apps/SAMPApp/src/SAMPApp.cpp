@@ -9,6 +9,7 @@ SAMPApp::SAMPApp() : gui::Application("SAMPApp") {
     //Setup process
     processes.emplace_back(std::make_shared<gui::Process>(
         "Process-1", [&]() -> void { process(1.0 / targetFramerate); }, [&]() -> void { restart(); }));
+    processes.back()->targetFramerate = 30.0;
 
     //Setup scene
     const auto [width, height] = getCurrentWindowSize();
