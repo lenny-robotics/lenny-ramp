@@ -148,9 +148,9 @@ void Plan::initializePlots() {
             //--- positionPlots
             f_addPlot(positionPlots, description, "time", "value", 1000);
             positionPlots.back()->addLineSpec(
-                {"lower_limit", [](const std::array<double, 3>& d) { return (float)d.at(0); }, std::array<float, 3>{1.0, 0.0, 0.0}});
+                {"lower_limit", [](const std::array<double, 3>& d) { return (float)d.at(0); }, std::array<float, 3>{0.75, 0.0, 0.0}});
             positionPlots.back()->addLineSpec(
-                {"upper_limit", [](const std::array<double, 3>& d) { return (float)d.at(1); }, std::array<float, 3>{1.0, 0.0, 0.0}});
+                {"upper_limit", [](const std::array<double, 3>& d) { return (float)d.at(1); }, std::array<float, 3>{0.75, 0.0, 0.0}});
             positionPlots.back()->addLineSpec(
                 {"angle", [](const std::array<double, 3>& d) { return (float)d.at(2); }, std::array<float, 3>{0.30196, 0.73333, 0.90196}});
 
@@ -182,8 +182,9 @@ void Plan::updatePlots(const bool& isRecedingHorizon) {
         static float time = 0.f;
         const Eigen::VectorXd q_0 = getAgentStateForTrajectoryIndex(motionTrajectory, 0);
         const Eigen::VectorXd q_m1 = getAgentStateForTrajectoryIndex(motionTrajectory, -1);
+        const Eigen::VectorXd q_m2 = getAgentStateForTrajectoryIndex(motionTrajectory, -2);
         updatePlots(positionPlots, robot::Robot::POSITION, q_0, time);
-        updatePlots(velocityPlots, robot::Robot::VELOCITY, (q_0 - q_m1) / deltaT, time);
+        updatePlots(velocityPlots, robot::Robot::VELOCITY, agent->estimateAgentVelocity(q_0, q_m1, deltaT), time);
         time += (float)deltaT;
     } else {
         //Clear data first
@@ -196,9 +197,10 @@ void Plan::updatePlots(const bool& isRecedingHorizon) {
         for (int i = -1; i < (int)numSteps; i++) {
             const Eigen::VectorXd q_i = getAgentStateForTrajectoryIndex(motionTrajectory, i);
             const Eigen::VectorXd q_im1 = getAgentStateForTrajectoryIndex(motionTrajectory, i - 1);
+            const Eigen::VectorXd q_im2 = getAgentStateForTrajectoryIndex(motionTrajectory, i - 2);
             const float time = (float)(i + i) * (float)deltaT;
             updatePlots(positionPlots, robot::Robot::POSITION, q_i, time);
-            updatePlots(velocityPlots, robot::Robot::VELOCITY, (q_i - q_im1) / deltaT, time);
+            updatePlots(velocityPlots, robot::Robot::VELOCITY, agent->estimateAgentVelocity(q_i, q_im1, deltaT), time);
         }
     }
 }
@@ -215,6 +217,8 @@ void Plan::drawScene(const double& currentAnimationTime, const bool& isRecedingH
         drawLinkTargets();
     if (showStateTargets)
         drawStateTargets();
+    if (showLinkLimits)
+        drawLinkLimits();
 }
 
 void Plan::drawEndEffectorTrajectories() const {
@@ -275,6 +279,17 @@ void Plan::drawStateTargets() const {
     }
 }
 
+void Plan::drawLinkLimits() const {
+    using tools::Renderer;
+    for (const LinkLimits& limits : linkPositionLimits) {
+        if (limits.linear.has_value() && limits.linear.has_value()) {
+            const Eigen::Vector3d com = 0.5 * (limits.linear->upper + limits.linear->lower);
+            const Eigen::Vector3d dim = limits.linear->upper - limits.linear->lower;
+            Renderer::I->drawCuboid(com, Eigen::QuaternionD::Identity(), dim, Eigen::Vector4d(0.75, 0.75, 0.75, 0.5));
+        }
+    }
+}
+
 void Plan::drawGui(const bool& withTrajectoryStettings) {
     using tools::Gui;
     if (Gui::I->TreeNode(("Plan - `" + agent->name + "`").c_str())) {
@@ -332,6 +347,20 @@ void Plan::drawGui(const bool& withTrajectoryStettings) {
                 Gui::I->TreePop();
             }
 
+            if (Gui::I->TreeNode("Link Position Limits")) {
+                int iter = 0;
+                for (auto& entry : linkPositionLimits)
+                    entry.drawGui(std::to_string(iter++));
+                Gui::I->TreePop();
+            }
+
+            if (Gui::I->TreeNode("Link Velocity Limits")) {
+                int iter = 0;
+                for (auto& entry : linkVelocityLimits)
+                    entry.drawGui(std::to_string(iter++));
+                Gui::I->TreePop();
+            }
+
             Gui::I->PopItemWidth();
             Gui::I->TreePop();
         }
@@ -342,6 +371,7 @@ void Plan::drawGui(const bool& withTrajectoryStettings) {
             Gui::I->Checkbox("Show Visuals Trajectory", showVisualsTrajectory);
             Gui::I->Checkbox("Show Link Targets", showLinkTargets);
             Gui::I->Checkbox("Show State Targets", showStateTargets);
+            Gui::I->Checkbox("Show Link Limits", showLinkLimits);
 
             Gui::I->Slider("Trajectory Drawing Interval", trajectoryDrawingInterval, 1, numSteps - 1);
 

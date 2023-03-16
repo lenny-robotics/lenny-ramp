@@ -2,6 +2,15 @@
 #include <lenny/tools/Gui.h>
 
 namespace lenny::samp {
+
+template <typename T>
+void LinkTarget::Target<T>::Target::drawGui() {
+    using tools::Gui;
+    Gui::I->Input("Local", local);
+    Gui::I->Input("Global", global);
+    Gui::I->Input("Weights", weights);
+}
+
 LinkTarget::LinkTarget(const rapt::Agent::CSPtr& agent, const std::string& linkName, const double& step, const Position& position,
                        const Orientation& orientation)
     : linkName(linkName), step(step), position(position), orientation(orientation) {
@@ -35,10 +44,7 @@ void LinkTarget::drawGui(const std::string& description) {
 
         if (Gui::I->TreeNode("Position")) {
             if (position.has_value()) {
-                Gui::I->Input("Global", position->global);
-                Gui::I->Input("Local", position->local);
-                Gui::I->Input("Weights", position->weights);
-            } else {
+                position->drawGui();
                 if (Gui::I->Button("Deactivate"))
                     position = std::nullopt;
             }
@@ -47,10 +53,7 @@ void LinkTarget::drawGui(const std::string& description) {
 
         if (Gui::I->TreeNode("Orientation")) {
             if (orientation.has_value()) {
-                Gui::I->Slider("Global", orientation->global);
-                Gui::I->Slider("Local", orientation->local);
-                Gui::I->Input("Weights", orientation->weights);
-            } else {
+                orientation->drawGui();
                 if (Gui::I->Button("Deactivate"))
                     orientation = std::nullopt;
             }

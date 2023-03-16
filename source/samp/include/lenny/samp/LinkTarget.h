@@ -13,8 +13,9 @@ public:
     struct Target {
         Target(const T& global, const T& local, const Eigen::Vector3d& weights) : global(global), local(local), weights(weights) {}
 
-        T global;
-        T local;
+        void drawGui();
+
+        T global, local;
         Eigen::Vector3d weights;
     };
     typedef Target<Eigen::Vector3d> Position;

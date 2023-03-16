@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lenny/rapt/Agent.h>
+#include <lenny/samp/LinkLimits.h>
 #include <lenny/samp/LinkRegularizer.h>
 #include <lenny/samp/LinkTarget.h>
 #include <lenny/samp/StateRegularizer.h>
@@ -59,6 +60,7 @@ private:
     void drawVisualsTrajectory() const;
     void drawLinkTargets() const;
     void drawStateTargets() const;
+    void drawLinkLimits() const;
 
 public:
     //--- Public members
@@ -67,9 +69,11 @@ public:
 
     //--- Lists
     std::vector<LinkTarget> linkTargets;
-    std::vector<LinkRegularizer> linkRegularizers;
     std::vector<StateTarget> stateTargets;
     std::vector<StateRegularizer> stateRegularizers;
+    std::vector<LinkRegularizer> linkRegularizers;
+    std::vector<LinkLimits> linkPositionLimits;
+    std::vector<LinkLimits> linkVelocityLimits;
 
     //--- Drawing
     mutable bool showEndEffectorTrajectories = true;
@@ -77,6 +81,7 @@ public:
     mutable bool showVisualsTrajectory = false;
     mutable bool showLinkTargets = true;
     mutable bool showStateTargets = true;
+    mutable bool showLinkLimits = true;
 
     mutable uint trajectoryDrawingInterval = 1;
 

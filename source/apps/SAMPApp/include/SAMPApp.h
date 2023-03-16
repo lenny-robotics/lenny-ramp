@@ -27,7 +27,7 @@ public:
 
 public:
     ur_5e::Robot robot = ur_5e::Robot(gui::Model::f_loadModel);
-    rapt::Agent::SPtr agent = std::make_shared<ur_5e::Agent>("Agent", robot);
+    ur_5e::Agent::SPtr agent = std::make_shared<ur_5e::Agent>("Agent", robot);
 
     rapt::WorldCollisionHandler worldCollisionHandler;
     samp::Planner planner = samp::Planner(agent, 30, 1.0 / 30.0, worldCollisionHandler.primitives, gui::Plot<samp::Plan::PlotType>::f_addPlot);

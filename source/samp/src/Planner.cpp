@@ -37,12 +37,14 @@ bool Planner::solve(const int& maxIterations) {
     //Update boundary conditions
     if (isRecedingHorizon) {
         const Eigen::VectorXd newAgentState = plan.getAgentStateForTrajectoryIndex(0);
-        plan.agent->setInitialRobotVelocityFromAgentVelocity((newAgentState - plan.agent->getInitialAgentState()) / plan.getDeltaT());
+        const Eigen::VectorXd currentAgentState = plan.agent->getInitialAgentState();
+        const Eigen::VectorXd newAgentVelocity = plan.agent->estimateAgentVelocity(newAgentState, currentAgentState, plan.getDeltaT());
+        plan.agent->setInitialRobotVelocityFromAgentVelocity(newAgentVelocity);
         plan.agent->setInitialRobotStateFromAgentState(newAgentState);
+
         animator.run = false;
         animator.restart();
     }
-
     return converged;
 }
 
