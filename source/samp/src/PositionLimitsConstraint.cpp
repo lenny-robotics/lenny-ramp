@@ -31,10 +31,7 @@ void PositionLimitsConstraint::computeConstraint(Eigen::VectorXd& C, const Eigen
     if (C.size() == 0)
         return;
 
-    Eigen::VectorXd initialRobotState = plan.agent->getInitialRobotState();
-    const tools::Transformation basePose = plan.agent->robot.base->getTransformationFromState(initialRobotState.segment(0, 6)) * plan.agent->localBaseTrafo.inverse();
-    initialRobotState.segment(0, 6) = plan.agent->robot.base->getStateFromTransformation(basePose);
-    Eigen::VectorXd agentState = plan.agent->getAgentStateFromRobotState(initialRobotState);
+    Eigen::VectorXd agentState = plan.agent->getInitialAgentState();
     const uint stateSize = agentState.size();
 
     uint iter = 0;
@@ -81,10 +78,7 @@ void PositionLimitsConstraint::computeJacobian(Eigen::SparseMatrixD& pCpQ, const
     if (pCpQ.rows() == 0)
         return;
 
-    Eigen::VectorXd initialRobotState = plan.agent->getInitialRobotState();
-    const tools::Transformation basePose = plan.agent->robot.base->getTransformationFromState(initialRobotState.segment(0, 6)) * plan.agent->localBaseTrafo.inverse();
-    initialRobotState.segment(0, 6) = plan.agent->robot.base->getStateFromTransformation(basePose);
-    Eigen::VectorXd agentState = plan.agent->getAgentStateFromRobotState(initialRobotState);
+    Eigen::VectorXd agentState = plan.agent->getInitialAgentState();
     const uint stateSize = agentState.size();
 
     Eigen::TripletDList tripletDList;

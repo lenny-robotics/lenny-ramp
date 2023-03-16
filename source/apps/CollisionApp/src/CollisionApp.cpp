@@ -1,14 +1,23 @@
 #include "CollisionApp.h"
 
+#include <lenny/gui/Guizmo.h>
 #include <lenny/gui/ImGui.h>
-#include <lenny/gui/ImGuizmo.h>
 
 namespace lenny {
 
 CollisionApp::CollisionApp() : gui::Application("CollisionApp") {
-    //Set drawing
-    showOrigin = false;
-    showGround = false;
+    //Setup process
+    processes.emplace_back(std::make_shared<gui::Process>(
+        "Process-1", [&]() -> void { process(); }, [&]() -> void { restart(); }));
+
+    //Setup scene
+    const auto [width, height] = getCurrentWindowSize();
+    scenes.emplace_back(std::make_shared<gui::Scene>("Scene-1", width, height));
+    scenes.back()->f_drawScene = [&]() -> void { drawScene(); };
+    scenes.back()->showOrigin = false;
+    scenes.back()->showGround = false;
+
+    //Setup drawing
     agent->showCollisionPrimitives = true;
 
     //Set target
@@ -53,20 +62,17 @@ void CollisionApp::drawGui() {
     if (ImGui::EnumSelection<PRIMITIVE>("World Primitive", worldPrimitive))
         setupWorldPrimitive();
 
-    if (worldCollisionHandler.primitives.size() > 0) {
-        ImGui::SetNextItemOpen(true);
-        if (ImGui::TreeNode("ImGuizmo")) {
-            auto& [primitive, parentState] = worldCollisionHandler.primitives.back();
-            static Eigen::Vector3d scale = Eigen::Vector3d::Ones();
-            tools::Transformation trafo = worldCollisionHandler.convertPose(parentState);
-            ImGuizmo::useWidget(trafo.position, trafo.orientation, scale, camera.getViewMatrix(), camera.getProjectionMatrix());
-            parentState = worldCollisionHandler.convertPose(trafo);
-
-            ImGui::TreePop();
-        }
-    }
-
     ImGui::End();
+}
+
+void CollisionApp::drawGuizmo() {
+    if (worldCollisionHandler.primitives.size() > 0) {
+        auto& [primitive, parentState] = worldCollisionHandler.primitives.back();
+        static Eigen::Vector3d scale = Eigen::Vector3d::Ones();
+        tools::Transformation trafo = worldCollisionHandler.convertPose(parentState);
+        gui::Guizmo::useWidget(trafo.position, trafo.orientation, scale);
+        parentState = worldCollisionHandler.convertPose(trafo);
+    }
 }
 
 void CollisionApp::setupAgentPrimitive() {

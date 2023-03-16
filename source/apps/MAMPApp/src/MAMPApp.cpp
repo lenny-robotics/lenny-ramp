@@ -1,13 +1,22 @@
 #include "MAMPApp.h"
 
+#include <lenny/gui/Guizmo.h>
 #include <lenny/gui/ImGui.h>
-#include <lenny/gui/ImGuizmo.h>
 
 namespace lenny {
 
 MAMPApp::MAMPApp() : gui::Application("MAMPApp") {
-    //Setup drawing
-    showOrigin = false;
+    //Setup process
+    processes.emplace_back(std::make_shared<gui::Process>(
+        "Process-1", [&]() -> void { process(1.0 / targetFramerate); }, [&]() -> void { restart(); }));
+
+    //Setup scene
+    const auto [width, height] = getCurrentWindowSize();
+    scenes.emplace_back(std::make_shared<gui::Scene>("Scene-1", width, height));
+    scenes.back()->f_drawScene = [&]() -> void { drawScene(); };
+    scenes.back()->f_mouseButtonCallback = [&](double xPos, double yPos, Ray ray, int button, int action) -> void {
+        mouseButtonCallback(xPos, yPos, ray, button, action);
+    };
 
     //Reset initial state
     Eigen::VectorXd initialRobotState = agents.at(1)->getInitialRobotState();
@@ -30,10 +39,10 @@ void MAMPApp::restart() {
     planner.resetMotionTrajectories();
 }
 
-void MAMPApp::process() {
+void MAMPApp::process(const double& dt) {
     if (planner.isRecedingHorizon) {
         for (samp::Plan& plan : planner.plans)
-            plan.setDeltaT(1.0 / targetFramerate);
+            plan.setDeltaT(dt);
     }
     planner.solve(1);
 }
@@ -44,8 +53,6 @@ void MAMPApp::drawScene() const {
 }
 
 void MAMPApp::drawGui() {
-    gui::Application::drawGui();
-
     ImGui::Begin("Main Menu");
 
     if (ImGui::TreeNode("App Settings")) {
@@ -70,21 +77,19 @@ void MAMPApp::drawGui() {
     planner.drawGui();
     worldCollisionHandler.drawGui();
 
-    if (selectedTarget) {
-        ImGui::SetNextItemOpen(true);
-        if (ImGui::TreeNode("ImGuizmo")) {
-            static Eigen::Vector3d scale = Eigen::Vector3d::Ones();
-            static Eigen::QuaternionD orientation = Eigen::QuaternionD::Identity();
-            ImGuizmo::useWidget(selectedTarget->position->global, selectedTarget->orientation.has_value() ? selectedTarget->orientation->global : orientation,
-                                scale, camera.getViewMatrix(), camera.getProjectionMatrix());
-            ImGui::TreePop();
-        }
-    }
-
     ImGui::End();
 }
 
-void MAMPApp::mouseButtonCallback(double xPos, double yPos, int button, int action) {
+void MAMPApp::drawGuizmo() {
+    if (selectedTarget) {
+        static Eigen::Vector3d scale = Eigen::Vector3d::Ones();
+        static Eigen::QuaternionD orientation = Eigen::QuaternionD::Identity();
+        gui::Guizmo::useWidget(selectedTarget->position->global, selectedTarget->orientation.has_value() ? selectedTarget->orientation->global : orientation,
+                               scale);
+    }
+}
+
+void MAMPApp::mouseButtonCallback(double xPos, double yPos, Ray ray, int button, int action) {
     if (action == GLFW_PRESS) {
         selectedTarget = nullptr;
 
@@ -101,7 +106,7 @@ void MAMPApp::mouseButtonCallback(double xPos, double yPos, int button, int acti
                 std::vector<samp::LinkTarget>& linkTargets = plan.linkTargets;
                 const robot::Robot& robot = plan.agent->robot;
                 const Eigen::VectorXd robotState = plan.agent->getRobotStateFromAgentState(plan.getAgentStateForTrajectoryTime(planner.animator.currentTime));
-                const auto firstLink = robot.getFirstLinkHitByRay(robotState, camera.getRayFromScreenCoordinates(xPos, yPos));
+                const auto firstLink = robot.getFirstLinkHitByRay(robotState, ray);
                 if (firstLink.has_value()) {
                     if (!useMultipleTargets)
                         linkTargets.clear();
