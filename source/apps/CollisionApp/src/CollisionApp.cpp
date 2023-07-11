@@ -1,5 +1,6 @@
 #include "CollisionApp.h"
 
+#include <lenny/gui/Gui.h>
 #include <lenny/gui/Guizmo.h>
 #include <lenny/gui/ImGui.h>
 
@@ -53,13 +54,13 @@ void CollisionApp::drawGui() {
     planner.drawGui();
     worldCollisionHandler.drawGui();
 
-    if (ImGui::EnumSelection<PRIMITIVE>("Agent Base Primitive", agentBasePrimitive))
+    if (gui::Gui::I->EnumSelection<PRIMITIVE>("Agent Base Primitive", agentBasePrimitive))
         setupAgentPrimitive();
 
-    if (ImGui::EnumSelection<PRIMITIVE>("Agent Link Primitive", agentLinkPrimitive))
+    if (gui::Gui::I->EnumSelection<PRIMITIVE>("Agent Link Primitive", agentLinkPrimitive))
         setupAgentPrimitive();
 
-    if (ImGui::EnumSelection<PRIMITIVE>("World Primitive", worldPrimitive))
+    if (gui::Gui::I->EnumSelection<PRIMITIVE>("World Primitive", worldPrimitive))
         setupWorldPrimitive();
 
     ImGui::End();
