@@ -9,7 +9,7 @@ project(lenny-ramp)
 
 # Build option
 capitalize(LENNY_PROJECT ${PROJECT_NAME})
-option(${LENNY_PROJECT}_BUILD_APPS "Build apps" ON)
+option(${LENNY_PROJECT}_BUILD_APPS "Build apps" OFF)
 
 # Project folder path
 set(LENNY_PROJECT_FOLDER "\"${CMAKE_CURRENT_LIST_DIR}\"" CACHE STRING "")

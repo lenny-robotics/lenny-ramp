@@ -20,8 +20,8 @@ endmacro()
 macro(fetch_lenny_repository repo tag)
     FetchContent_Declare(
             lenny-${repo} #
-            GIT_REPOSITORY git@github.com:lenny-robotics/lenny-${repo}.git #
-            GIT_TAG ${tag} #
+            GIT_REPOSITORY https://github.com/lenny-robotics/lenny-${repo}.git #
+            GIT_TAG ${tag} #t
     )
     fetch_repository(lenny-${repo})
     capitalize(LENNY_REPO lenny-${repo})
